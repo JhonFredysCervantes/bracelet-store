@@ -1,0 +1,98 @@
+[
+  {
+    "material": "Cuero",
+    "dije": "Martillo",
+    "tipo": "Oro",
+    "valor": 100
+  },
+  {
+    "material": "Cuero",
+    "dije": "Martillo",
+    "tipo": "Oro Rosado",
+    "valor": 100
+  },
+  {
+    "material": "Cuero",
+    "dije": "Martillo",
+    "tipo": "Plata",
+    "valor": 80
+  },
+  {
+    "material": "Cuero",
+    "dije": "Martillo",
+    "tipo": "Niquel",
+    "valor": 70
+  },
+  {
+    "material": "Cuero",
+    "dije": "Ancla",
+    "tipo": "Oro",
+    "valor": 120
+  },
+  {
+    "material": "Cuero",
+    "dije": "Ancla",
+    "tipo": "Oro Rosado",
+    "valor": 120
+  },
+  {
+    "material": "Cuero",
+    "dije": "Ancla",
+    "tipo": "Plata",
+    "valor": 100
+  },
+  {
+    "material": "Cuero",
+    "dije": "Ancla",
+    "tipo": "Niquel",
+    "valor": 90
+  },
+  {
+    "material": "Cuerda",
+    "dije": "Martillo",
+    "tipo": "Oro",
+    "valor": 90
+  },
+  {
+    "material": "Cuerda",
+    "dije": "Martillo",
+    "tipo": "Oro Rosado",
+    "valor": 90
+  },
+  {
+    "material": "Cuerda",
+    "dije": "Martillo",
+    "tipo": "Plata",
+    "valor": 70
+  },
+  {
+    "material": "Cuerda",
+    "dije": "Martillo",
+    "tipo": "Niquel",
+    "valor": 50
+  },
+  {
+    "material": "Cuerda",
+    "dije": "Ancla",
+    "tipo": "Oro",
+    "valor": 110
+  },
+  {
+    "material": "Cuerda",
+    "dije": "Ancla",
+    "tipo": "Oro Rosado",
+    "valor": 110
+  },
+  {
+    "material": "Cuerda",
+    "dije": "Ancla",
+    "tipo": "Plata",
+    "valor": 90
+  },
+  {
+    "material": "Cuerda",
+    "dije": "Ancla",
+    "tipo": "Niquel",
+    "valor": 80
+  }
+]

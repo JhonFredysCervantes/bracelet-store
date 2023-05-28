@@ -1,118 +1,169 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
+import { Inter } from "next/font/google";
+import { collection, onSnapshot, addDoc } from "firebase/firestore";
+import { db } from "../config/firebase";
+import { useState, useEffect } from "react";
 
-const inter = Inter({ subsets: ['latin'] })
+import braceletsToSave from "../data/bracelets.json";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const [bracelets, setBracelets] = useState([]);
+  const [quantity, setQuantity] = useState(1);
+  const [materiales, setMateriales] = useState([]);
+  const [materialSelected, setMaterialSelected] = useState(null);
+  const [dijes, setDijes] = useState([]);
+  const [dijeSelected, setDijeSelected] = useState(null);
+  const [tipos, setTipos] = useState([]);
+  const [tipoSelected, setTipoSelected] = useState(null);
+  const [priceBracelet, setPriceBracelet] = useState(0);
+  const [currencies, setCurrencies] = useState(["COP", "USD"]);
+  const [currency, setCurrency] = useState("COP");
+
+  const calculatePrice = () => {
+    bracelets
+      .filter(
+        (bracelet) =>
+          bracelet.materia == materialSelected &&
+          bracelet.dije == dijeSelected &&
+          bracelet.tipo == tipoSelected
+      )
+      .forEach((bracelet) => {
+        let result = bracelet.valor * quantity;
+
+        if (currency == "COP") {
+          result = result * 5000;
+        }
+        setPriceBracelet(result);
+      });
+  };
+
+  const getbracelets = async () => {
+    try {
+      await onSnapshot(collection(db, "bracelets"), (snapshot) => {
+        const newArray = snapshot.docs.map((item) => ({
+          id: item.id,
+          ...item.data(),
+        }));
+        setBracelets(newArray);
+        setMateriales([
+          ...new Set(newArray.map((elemento) => elemento.material)),
+        ]);
+        setDijes([...new Set(newArray.map((elemento) => elemento.dije))]);
+        setTipos([...new Set(newArray.map((elemento) => elemento.tipo))]);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const saveBracelets = async () => {
+    console.log(braceletsToSave);
+    braceletsToSave.forEach(async (bracelet) => {
+      try {
+        const docRef = await addDoc(collection(db, "bracelets"), {
+          material: bracelet.material,
+          dije: bracelet.dije,
+          tipo: bracelet.tipo,
+          valor: bracelet.valor,
+        });
+        console.log("Document written with ID: ", docRef.id);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+    });
+  };
+
+  useEffect(() => {
+    getbracelets();
+    calculatePrice();
+  }, []);
+
+  useEffect(() => {
+    calculatePrice();
+  }, [materialSelected, dijeSelected, tipoSelected, quantity, currency]);
+
   return (
-    <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
-    >
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/pages/index.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <main className={`p-24 ${inter.className}`}>
+      <h1 className="text-4xl font-bold row">Crea tu propio manilla</h1>
+      <div className="flex col">
+        <div className="m-8">
+          <label>Material: </label>
+          {
+            <select
+              value={materialSelected}
+              onChange={(e) => setMaterialSelected(e.target.value)}
+            >
+              {materiales.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          }
+        </div>
+
+        <div className="m-8">
+          <label>Dije: </label>
+          {
+            <select
+              value={dijeSelected}
+              onChange={(e) => setDijeSelected(e.target.value)}
+            >
+              {dijes.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          }
+        </div>
+
+        <div className="m-8">
+          <label>Tipo: </label>
+          {
+            <select
+              value={tipoSelected}
+              onChange={(e) => setTipoSelected(e.target.value)}
+            >
+              {tipos.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          }
+        </div>
+        <div className="col-12">
+          <label>Cantidad</label>
+          <input
+            type="number"
+            placeholder="Cuantas deseas?"
+            className="border-2 border-gray-200 rounded-md p-1 m-6"
+            onChange={(e) => setQuantity(e.target.value)}
+            value={quantity}
+          />
+        </div>
+        <div className="m-8">
+          <label>Moneda: </label>
+          {
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+            >
+              {currencies.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          }
         </div>
       </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Discover and deploy boilerplate example Next.js&nbsp;projects.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div className="flex col">
+        <p className="text-2xl font-bold">Total: </p>
+        <h2 className="text-2xl">{priceBracelet}</h2>
       </div>
     </main>
-  )
+  );
 }
