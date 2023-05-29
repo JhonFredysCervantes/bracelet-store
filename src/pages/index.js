@@ -84,7 +84,7 @@ export default function Home() {
 
   return (
     <main className={`p-24 ${inter.className}`}>
-      <h1 className="text-4xl font-bold row">Crea tu propio manilla</h1>
+      <h1 className="text-4xl font-bold row">Crea tu propia manilla</h1>
       <div className="flex col">
         <div className="m-8">
           <label>Material: </label>
@@ -140,6 +140,8 @@ export default function Home() {
           <label>Cantidad</label>
           <input
             type="number"
+            max={100}
+            min={1}
             placeholder="Cuantas deseas?"
             className="border-2 border-gray-200 rounded-md p-1 m-6"
             onChange={(e) => setQuantity(e.target.value)}
