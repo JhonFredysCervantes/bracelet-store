@@ -18,13 +18,13 @@ export default function Home() {
   const [tipoSelected, setTipoSelected] = useState(null);
   const [priceBracelet, setPriceBracelet] = useState(0);
   const [currencies, setCurrencies] = useState(["COP", "USD"]);
-  const [currency, setCurrency] = useState("COP");
+  const [currency, setCurrency] = useState("USD");
 
   const calculatePrice = () => {
     bracelets
       .filter(
         (bracelet) =>
-          bracelet.materia == materialSelected &&
+          bracelet.material == materialSelected &&
           bracelet.dije == dijeSelected &&
           bracelet.tipo == tipoSelected
       )
@@ -76,7 +76,6 @@ export default function Home() {
 
   useEffect(() => {
     getbracelets();
-    calculatePrice();
   }, []);
 
   useEffect(() => {
@@ -94,6 +93,7 @@ export default function Home() {
               value={materialSelected}
               onChange={(e) => setMaterialSelected(e.target.value)}
             >
+              <option value="none">Selecciona una opción</option>
               {materiales.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -110,6 +110,7 @@ export default function Home() {
               value={dijeSelected}
               onChange={(e) => setDijeSelected(e.target.value)}
             >
+              <option value="none">Selecciona una opción</option>
               {dijes.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -126,6 +127,7 @@ export default function Home() {
               value={tipoSelected}
               onChange={(e) => setTipoSelected(e.target.value)}
             >
+              <option value="none">Selecciona una opción</option>
               {tipos.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -160,9 +162,11 @@ export default function Home() {
           }
         </div>
       </div>
-      <div className="flex col">
-        <p className="text-2xl font-bold">Total: </p>
-        <h2 className="text-2xl">{priceBracelet}</h2>
+      <div className="flex col-12">
+        <div className="flex bg-amber-300 w-64 h-32 ml-auto p-10">
+          <p className="text-2xl font-bold">Total: </p>
+          <h2 className="text-2xl"> ${priceBracelet.toLocaleString('es')}</h2>
+        </div>
       </div>
     </main>
   );
